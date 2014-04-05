@@ -1,0 +1,46 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <parent>
+    <groupId>de.metalcon</groupId>
+    <artifactId>pom</artifactId>
+    <version>0.0.1</version>
+  </parent>
+
+  <modelVersion>4.0.0</modelVersion>
+  <artifactId>image-gallery-server</artifactId>
+  <version>0.0.1</version>
+  <name>ImageGalleryServer</name>
+
+  <!-- Metalcon repository to resolve dependencies from -->
+  <repositories>
+    <repository>
+      <id>metalcon-depend</id>
+      <url>http://develop.metalcon.de:8080/mvn/</url>
+    </repository>
+  </repositories>
+
+  <properties>
+    <metalcon.muid.version>0.2.0-SNAPSHOT</metalcon.muid.version>
+
+    <blueprints.version>2.4.0</blueprints.version>
+  </properties>
+
+  <dependencies>
+    <dependency>
+      <groupId>de.metalcon</groupId>
+      <artifactId>muid</artifactId>
+      <version>${metalcon.muid.version}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>com.tinkerpop.blueprints</groupId>
+      <artifactId>blueprints-core</artifactId>
+      <version>${blueprints.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.tinkerpop.blueprints</groupId>
+      <artifactId>blueprints-neo4j-graph</artifactId>
+      <version>${blueprints.version}</version>
+    </dependency>
+  </dependencies>
+</project>
