@@ -11,10 +11,12 @@ import com.tinkerpop.blueprints.impls.neo4j.Neo4jGraph;
 import de.metalcon.domain.Muid;
 import de.metalcon.domain.MuidType;
 import de.metalcon.exceptions.ServiceOverloadedException;
+import de.metalcon.imageGalleryServer.exceptions.ExceptionFactory;
 import de.metalcon.imageGalleryServer.nodes.EntityNode;
-import de.metalcon.imageGalleryServer.nodes.GalleryNode;
+import de.metalcon.imageGalleryServer.nodes.ImageNode;
 import de.metalcon.imageGalleryServer.schema.AuthorType;
 import de.metalcon.imageGalleryServer.schema.GalleryType;
+import de.metalcon.imageGalleryServer.schema.NodeType;
 import de.metalcon.imageGalleryServer.schema.Properties;
 
 public class ImageGallery {
@@ -23,7 +25,7 @@ public class ImageGallery {
 
     protected Graph graph;
 
-    protected HashMap<Long, Vertex> users;
+    protected HashMap<Long, Vertex> entities;
 
     protected HashMap<Long, Vertex> galleries;
 
@@ -39,7 +41,7 @@ public class ImageGallery {
             boolean overwrite) {
         graph = new Neo4jGraph(dbPath);
         // TODO use built-in indexing
-        users = new HashMap<Long, Vertex>();
+        entities = new HashMap<Long, Vertex>();
         galleries = new HashMap<Long, Vertex>();
         images = new HashMap<Long, Vertex>();
 
@@ -49,7 +51,7 @@ public class ImageGallery {
             for (Vertex vertex : graph.getVertices()) {
                 entity = new EntityNode(vertex);
                 if (entity.isValid()) {
-                    users.put(entity.getIdentifier(), vertex);
+                    entities.put(entity.getIdentifier(), vertex);
                 }
             }
         } else {
@@ -64,115 +66,95 @@ public class ImageGallery {
         }
     }
 
-    protected Vertex getEntity(long id) {
-        if (users.containsKey(id)) {
-            return users.get(id);
-        }
+    protected void createAuthors(Vertex gallery) {
+        Vertex author = graph.addVertex(NO_ID);
+        gallery.addEdge(AuthorType.OWN.getLabel(), author);
 
-        // create entity if not existing
-        Vertex entity = graph.addVertex(id);
-        entity.setProperty(Properties.Entity.TYPE, Types.ENTITY);
-        entity.setProperty(Properties.Entity.IDENTIFIER, id);
-        createGeneratedGalleries(entity);
-
-        users.put(id, entity);
-
-        System.out.println("entity " + id + " created");
-        return entity;
+        author = graph.addVertex(NO_ID);
+        gallery.addEdge(AuthorType.FOREIGN.getLabel(), author);
     }
 
     protected void createGeneratedGalleries(Vertex entity) {
         Vertex genGallery = graph.addVertex(NO_ID);
-        entity.addEdge(Labels.Entity.Gallery.ALL, genGallery);
+        entity.addEdge(GalleryType.ALL.getLabel(), genGallery);
+        createAuthors(genGallery);
 
         genGallery = graph.addVertex(NO_ID);
-        entity.addEdge(Labels.Entity.Gallery.NEWS_FEED, genGallery);
+        entity.addEdge(GalleryType.NEWS_FEED.getLabel(), genGallery);
+        createAuthors(genGallery);
 
         genGallery = graph.addVertex(NO_ID);
-        entity.addEdge(Labels.Entity.Gallery.WIKI, genGallery);
+        entity.addEdge(GalleryType.WIKI.getLabel(), genGallery);
+        createAuthors(genGallery);
 
         genGallery = graph.addVertex(NO_ID);
-        entity.addEdge(Labels.Entity.Gallery.TAGGED, genGallery);
+        entity.addEdge(GalleryType.TAGGED.getLabel(), genGallery);
+        createAuthors(genGallery);
     }
 
-    protected void createAuthors(Vertex gallery) {
-        Vertex author = graph.addVertex(NO_ID);
-        gallery.addEdge(Labels.Gallery.Author.OWN, author);
+    protected Vertex createEntity(long id) {
+        Vertex entity = graph.addVertex(id);
+        entity.setProperty(Properties.Entity.TYPE,
+                NodeType.ENTITY.getIdentifier());
+        entity.setProperty(Properties.IDENTIFIER, id);
+        createGeneratedGalleries(entity);
 
-        author = graph.addVertex(NO_ID);
-        gallery.addEdge(Labels.Gallery.Author.FOREIGN, author);
-        System.out.println("author nodes created for gallery "
-                + EntityNode.getIdentifier(gallery));
+        // add to index
+        entities.put(id, entity);
+
+        System.out.println("created entity " + id);
+        return entity;
     }
 
-    protected Vertex getGallery(long entityId, long galleryId) {
-        Vertex entity = getEntity(entityId);
-        if (galleries.containsKey(galleryId)) {
-            return galleries.get(galleryId);
+    protected Vertex getEntity(long id) {
+        if (entities.containsKey(id)) {
+            return entities.get(id);
         }
-
-        // create gallery if not existing
-        Vertex gallery = graph.addVertex(galleryId);
-        gallery.setProperty(Properties.Gallery.TYPE, Types.GALLERY);
-        gallery.setProperty(Properties.Gallery.IDENTIFIER, galleryId);
-        createAuthors(gallery);
-        entity.addEdge(Labels.Entity.Gallery.USER, gallery);
-
-        galleries.put(galleryId, gallery);
-
-        System.out.println("gallery " + galleryId + " created @ entity "
-                + entityId);
-        return gallery;
+        return createEntity(id);
     }
 
-    protected Vertex getImage(long id) {
-        if (images.containsKey(id)) {
-            return images.get(id);
-        }
-        // FIMXE
-        return graph.addVertex(id);
-        //        throw new IllegalArgumentException("image is not existing");
-    }
+    protected Vertex createImage(long id) {
+        Vertex image = graph.addVertex(id);
+        image.setProperty(Properties.IDENTIFIER, id);
 
-    protected void addForeignImageToGallery(Vertex gallery, Vertex image) {
-        Vertex otherImages = GalleryNode.getNodeForeignImages(gallery);
-        otherImages.addEdge(Labels.Gallery.IMAGE, image);
-    }
+        // add to index
+        images.put(id, image);
 
-    public void addImageToGallery(long imageId, long entityId, long galleryId) {
-        Vertex image = getImage(imageId);
-        Vertex gallery = getGallery(entityId, galleryId);
-        Vertex entity = GalleryNode.getOwner(gallery);
-        Vertex genGalleryAll = EntityNode.getGenericGalleryAll(entity);
-
-        addForeignImageToGallery(genGalleryAll, image);
-        addForeignImageToGallery(gallery, image);
+        System.out.println("created image " + id);
+        return image;
     }
 
     public void createImage(long entityId, long imgId, InputStream imgData) {
         if (images.containsKey(imgId)) {
-            throw new IllegalArgumentException("");
+            throw ExceptionFactory.usageImageIdentifierUsed(imgId);
         }
-        if (!users.containsKey(entityId)) {
-            // TODO create user
-        }
-        EntityNode entity = new EntityNode(users.get(entityId));
+        EntityNode entity = new EntityNode(getEntity(entityId));
 
-        // create image
+        // create new image
         Vertex image = createImage(imgId);
 
-        // link image
-        entity.addImage(image, GalleryType.ALL, AuthorType.OWN);
+        // link new image
+        entity.addImage(image, GalleryType.ALL, AuthorType.OWN, false);
+
+        // TODO store image
+    }
+
+    public Image readImage(long imageId) {
+        if (!images.containsKey(imageId)) {
+            throw ExceptionFactory.usageImageIdentifierUnknown(imageId);
+        }
+        // TODO pipe image
+        Vertex image = images.get(imageId);
+        return ImageNode.loadImage(image);
     }
 
     public static void main(String[] args) throws ServiceOverloadedException {
         ImageGallery gallery = new ImageGallery("/tmp/gallery", true);
 
-        Muid muidUser = Muid.create(MuidType.USER);
-        Muid muidGallery = Muid.create(MuidType.INSTRUMENT);
+        Muid muidEntity = Muid.create(MuidType.USER);
         Muid muidImage = Muid.create(MuidType.GENRE);
-        gallery.addImageToGallery(muidImage.getValue(), muidUser.getValue(),
-                muidGallery.getValue());
+        gallery.createImage(1, 2, null);
+        System.out.println(gallery.readImage(2).metaData);
 
         gallery.graph.shutdown();
     }
