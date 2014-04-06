@@ -1,5 +1,6 @@
 package de.metalcon.imageGalleryServer;
 
+import java.io.InputStream;
 import java.util.HashMap;
 
 import com.tinkerpop.blueprints.Edge;
@@ -10,6 +11,11 @@ import com.tinkerpop.blueprints.impls.neo4j.Neo4jGraph;
 import de.metalcon.domain.Muid;
 import de.metalcon.domain.MuidType;
 import de.metalcon.exceptions.ServiceOverloadedException;
+import de.metalcon.imageGalleryServer.nodes.EntityNode;
+import de.metalcon.imageGalleryServer.nodes.GalleryNode;
+import de.metalcon.imageGalleryServer.schema.AuthorType;
+import de.metalcon.imageGalleryServer.schema.GalleryType;
+import de.metalcon.imageGalleryServer.schema.Properties;
 
 public class ImageGallery {
 
@@ -39,9 +45,11 @@ public class ImageGallery {
 
         if (!overwrite) {
             // load indices
+            EntityNode entity;
             for (Vertex vertex : graph.getVertices()) {
-                if (EntityNode.isEntityNode(vertex)) {
-                    users.put(EntityNode.getIdentifier(vertex), vertex);
+                entity = new EntityNode(vertex);
+                if (entity.isValid()) {
+                    users.put(entity.getIdentifier(), vertex);
                 }
             }
         } else {
@@ -139,6 +147,22 @@ public class ImageGallery {
 
         addForeignImageToGallery(genGalleryAll, image);
         addForeignImageToGallery(gallery, image);
+    }
+
+    public void createImage(long entityId, long imgId, InputStream imgData) {
+        if (images.containsKey(imgId)) {
+            throw new IllegalArgumentException("");
+        }
+        if (!users.containsKey(entityId)) {
+            // TODO create user
+        }
+        EntityNode entity = new EntityNode(users.get(entityId));
+
+        // create image
+        Vertex image = createImage(imgId);
+
+        // link image
+        entity.addImage(image, GalleryType.ALL, AuthorType.OWN);
     }
 
     public static void main(String[] args) throws ServiceOverloadedException {

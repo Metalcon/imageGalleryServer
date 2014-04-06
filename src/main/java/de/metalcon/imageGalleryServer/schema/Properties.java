@@ -1,6 +1,8 @@
-package de.metalcon.imageGalleryServer;
+package de.metalcon.imageGalleryServer.schema;
 
 public class Properties {
+
+    public static final String IDENTIFIER = "identifier";
 
     private class Node {
 
