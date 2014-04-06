@@ -23,7 +23,7 @@ public class GenericGallery extends GalleryNode {
             EntityNode owner,
             GalleryType type) {
         super(owner);
-        vertex = GraphNavigator.next(owner.getVertex(), type.getLabel());
+        vertex = GraphNavigator.forward(owner.getVertex(), type.getLabel());
     }
 
 }

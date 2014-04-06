@@ -14,6 +14,11 @@ public enum NodeType {
     ENTITY("entity"),
 
     /**
+     * generated gallery of an entity
+     */
+    GENERATED_GALLERY("genGallery"),
+
+    /**
      * manual gallery owned by an entity
      */
     GALLERY("gallery"),

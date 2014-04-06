@@ -61,7 +61,7 @@ public class EntityNode extends IndexedNode {
     }
 
     public void addImage(
-            Vertex image,
+            ImageNode image,
             GalleryType galleryType,
             AuthorType authorType,
             boolean checkForDuplicate) {

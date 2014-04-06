@@ -43,9 +43,16 @@ public abstract class GalleryNode extends WrappedNode {
         this.owner = owner;
     }
 
+    /**
+     * @return gallery owner
+     */
+    public EntityNode getOwner() {
+        return owner;
+    }
+
     protected Vertex getOwnImages() {
         if (ownImages == null) {
-            ownImages = GraphNavigator.next(vertex, AuthorType.OWN.getLabel());
+            ownImages = GraphNavigator.forward(vertex, AuthorType.OWN.getLabel());
         }
         return ownImages;
     }
@@ -53,7 +60,7 @@ public abstract class GalleryNode extends WrappedNode {
     protected Vertex getForeignImages() {
         if (foreignImages == null) {
             foreignImages =
-                    GraphNavigator.next(vertex, AuthorType.FOREIGN.getLabel());
+                    GraphNavigator.forward(vertex, AuthorType.FOREIGN.getLabel());
         }
         return foreignImages;
     }
@@ -62,7 +69,7 @@ public abstract class GalleryNode extends WrappedNode {
      * add an image to this gallery
      * 
      * @param image
-     *            image vertex
+     *            image to be added
      * @param authorType
      *            author type
      * @param checkIfLinked
@@ -70,7 +77,7 @@ public abstract class GalleryNode extends WrappedNode {
      *            set to true
      */
     public void addImage(
-            Vertex image,
+            ImageNode image,
             AuthorType authorType,
             boolean checkIfLinked) {
         Vertex gallery;
@@ -82,8 +89,8 @@ public abstract class GalleryNode extends WrappedNode {
 
             // loop through linked galleries of owner to search for this gallery
             if (checkIfLinked) {
-                for (Vertex galleryLinkedTo : image.getVertices(Direction.IN,
-                        label)) {
+                for (Vertex galleryLinkedTo : image.getVertex().getVertices(
+                        Direction.IN, label)) {
                     if (gallery.equals(galleryLinkedTo)) {
                         return;
                     }
@@ -97,13 +104,13 @@ public abstract class GalleryNode extends WrappedNode {
             if (checkIfLinked) {
                 for (Vertex galleryImage : gallery.getVertices(Direction.OUT,
                         label)) {
-                    if (image.equals(galleryImage)) {
+                    if (image.getVertex().equals(galleryImage)) {
                         return;
                     }
                 }
             }
         }
 
-        gallery.addEdge(label, image);
+        gallery.addEdge(label, image.getVertex());
     }
 }
