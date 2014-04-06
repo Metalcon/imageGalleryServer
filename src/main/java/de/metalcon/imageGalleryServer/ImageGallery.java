@@ -20,6 +20,7 @@ import de.metalcon.imageGalleryServer.schema.AuthorType;
 import de.metalcon.imageGalleryServer.schema.GalleryType;
 import de.metalcon.imageGalleryServer.schema.NodeType;
 import de.metalcon.imageGalleryServer.schema.Properties;
+import de.metalcon.imageGalleryServer.tagging.TagInformation;
 
 public class ImageGallery {
 
@@ -126,19 +127,60 @@ public class ImageGallery {
         return image;
     }
 
-    public void createImage(long entityId, long imageId, InputStream imgData) {
+    protected void createImage(
+            EntityNode entity,
+            GalleryNode gallery,
+            long imageId) {
         if (images.containsKey(imageId)) {
             throw ExceptionFactory.usageImageIdentifierUsed(imageId);
         }
-        EntityNode entity = new EntityNode(getEntityVertex(entityId));
 
         // create new image
-        ImageNode image =
-                new ImageNode(entity.getGeneratedGallery(GalleryType.ALL),
-                        createImageVertex(imageId));
+        ImageNode image = new ImageNode(gallery, createImageVertex(imageId));
 
         // link new image
-        entity.addImage(image, GalleryType.ALL, AuthorType.OWN, false);
+        GalleryNode genGalleryAll = entity.getGeneratedGallery(GalleryType.ALL);
+        if (!genGalleryAll.equals(gallery)) {
+            genGalleryAll.addImage(image, AuthorType.OWN, false);
+        }
+        gallery.addImage(image, AuthorType.OWN, false);
+    }
+
+    public void createImage(long entityId, long imageId, InputStream imgData) {
+        EntityNode entity = new EntityNode(getEntityVertex(entityId));
+        GalleryNode gallery = entity.getGeneratedGallery(GalleryType.ALL);
+
+        // create image
+        createImage(entity, gallery, imageId);
+
+        // TODO store image
+    }
+
+    protected void createImageInGeneratedGallery(
+            long entityId,
+            GalleryType galleryType,
+            long imageId) {
+        EntityNode entity = new EntityNode(getEntityVertex(entityId));
+        GalleryNode gallery = entity.getGeneratedGallery(galleryType);
+
+        // create image
+        createImage(entity, gallery, imageId);
+    }
+
+    public void createNewsFeedImage(
+            long entityId,
+            long imageId,
+            InputStream imgData) {
+        // create image
+        createImageInGeneratedGallery(entityId, GalleryType.NEWS_FEED, imageId);
+
+        // TODO store image
+    }
+
+    public void
+        createWikiImage(long entityId, long imageId, InputStream imgData) {
+        // create image
+        createImageInGeneratedGallery(entityId, GalleryType.WIKI, imageId);
 
         // TODO store image
     }
@@ -163,7 +205,7 @@ public class ImageGallery {
         return createGalleryVertex(entity.getVertex(), galleryId);
     }
 
-    public void addImage(long entityId, long galleryId, long imageId) {
+    public void addImageToGallery(long entityId, long galleryId, long imageId) {
         if (!images.containsKey(imageId)) {
             throw ExceptionFactory.usageImageIdentifierUnknown(imageId);
         }
@@ -184,23 +226,49 @@ public class ImageGallery {
         gallery.addImage(image, authorType, true);
     }
 
+    public void createImageInGallery(
+            long entityId,
+            long galleryId,
+            long imageId,
+            InputStream imgData) {
+        if (images.containsKey(imageId)) {
+            throw ExceptionFactory.usageImageIdentifierUsed(imageId);
+        }
+        EntityNode entity = new EntityNode(getEntityVertex(entityId));
+        GalleryNode gallery =
+                new ManualGalleryNode(entity, getGalleryVertex(entity,
+                        galleryId));
+
+        // create new image
+        createImage(entity, gallery, imageId);
+    }
+
+    public void tagImage(long imageId, TagInformation tagInfo) {
+        if (!images.containsKey(imageId)) {
+            throw ExceptionFactory.usageImageIdentifierUnknown(imageId);
+        }
+        // TODO pipe meta data
+        Image image = ImageNode.loadImage(images.get(imageId));
+
+        // TODO append tag information, update meta data
+    }
+
     public Image readImage(long imageId) {
         if (!images.containsKey(imageId)) {
             throw ExceptionFactory.usageImageIdentifierUnknown(imageId);
         }
         // TODO pipe image
-        Vertex image = images.get(imageId);
-        return ImageNode.loadImage(image);
+        return ImageNode.loadImage(images.get(imageId));
     }
 
     public static void main(String[] args) throws ServiceOverloadedException {
         ImageGallery gallery = new ImageGallery("/tmp/gallery", true);
 
         try {
-            Muid muidEntity = Muid.create(MuidType.USER);
-            Muid muidImage = Muid.create(MuidType.GENRE);
-            gallery.createImage(1, 2, null);
-            System.out.println(gallery.readImage(2).metaData);
+            long entityId = Muid.create(MuidType.USER).getValue();
+            long imageId = Muid.create(MuidType.GENRE).getValue();
+            gallery.createImage(entityId, imageId, null);
+            System.out.println(gallery.readImage(imageId).metaData);
         } finally {
             gallery.graph.shutdown();
         }

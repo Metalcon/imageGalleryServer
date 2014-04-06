@@ -5,7 +5,6 @@ import java.util.Map;
 
 import com.tinkerpop.blueprints.Vertex;
 
-import de.metalcon.imageGalleryServer.schema.AuthorType;
 import de.metalcon.imageGalleryServer.schema.GalleryType;
 import de.metalcon.imageGalleryServer.schema.NodeType;
 import de.metalcon.imageGalleryServer.schema.Properties;
@@ -60,19 +59,4 @@ public class EntityNode extends IndexedNode {
         return generatedGalleries.get(type);
     }
 
-    public void addImage(
-            ImageNode image,
-            GalleryType galleryType,
-            AuthorType authorType,
-            boolean checkForDuplicate) {
-        // link image to ALL at first
-        if (galleryType != GalleryType.ALL) {
-            getGeneratedGallery(GalleryType.ALL).addImage(image, authorType,
-                    checkForDuplicate);
-        }
-
-        // link image to gallery specified
-        getGeneratedGallery(galleryType).addImage(image, authorType,
-                checkForDuplicate);
-    }
 }
