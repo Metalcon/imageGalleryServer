@@ -5,10 +5,9 @@ import org.neo4j.graphdb.Node;
 
 public class GNode {
 
-    /**
-     * node type property identifier
-     */
-    protected static final String TYPE = "type";
+    protected static final String PROP_TYPE = "type";
+
+    public static final String PROP_IDENTIFIER = "identifier";
 
     /**
      * node wrapped by this object
@@ -20,10 +19,35 @@ public class GNode {
      * 
      * @param graph
      *            graph holding the gallery
+     * @param type
+     *            node type
+     * @param identifier
+     *            node identifier for indexing
      */
     public GNode(
-            GraphDatabaseService graph) {
-        node = graph.createNode();
+            GraphDatabaseService graph,
+            GNodeType type,
+            long identifier) {
+        node = graph.createNode(type);
+        node.setProperty(PROP_IDENTIFIER, identifier);
+    }
+
+    /**
+     * load basic gallery node
+     * 
+     * @param node
+     *            node representing this object
+     */
+    protected GNode(
+            Node node) {
+        this.node = node;
+    }
+
+    /**
+     * @return node wrapped by this object
+     */
+    public Node getNode() {
+        return node;
     }
 
 }

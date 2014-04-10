@@ -1,6 +1,8 @@
 package de.metalcon.imageGalleryServer.graph;
 
-public enum GNodeType {
+import org.neo4j.graphdb.Label;
+
+public enum GNodeType implements Label {
 
     /**
      * node represents an entity
