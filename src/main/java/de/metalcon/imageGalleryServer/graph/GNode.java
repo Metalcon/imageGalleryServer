@@ -3,6 +3,12 @@ package de.metalcon.imageGalleryServer.graph;
 import org.neo4j.graphdb.GraphDatabaseService;
 import org.neo4j.graphdb.Node;
 
+/**
+ * basic node in gallery
+ * 
+ * @author sebschlicht
+ * 
+ */
 public class GNode {
 
     protected static final String PROP_TYPE = "type";

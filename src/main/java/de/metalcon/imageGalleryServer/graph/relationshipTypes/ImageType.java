@@ -2,7 +2,13 @@ package de.metalcon.imageGalleryServer.graph.relationshipTypes;
 
 import org.neo4j.graphdb.RelationshipType;
 
-public enum AuthorType implements RelationshipType {
+/**
+ * types an image relationship can be of
+ * 
+ * @author sebschlicht
+ * 
+ */
+public enum ImageType implements RelationshipType {
 
     /**
      * image was uploaded by entity

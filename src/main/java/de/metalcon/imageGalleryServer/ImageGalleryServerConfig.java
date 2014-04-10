@@ -17,6 +17,12 @@ public class ImageGalleryServerConfig extends ImageStorageServerConfig {
      */
     public String galleryDatabase_path;
 
+    /**
+     * load image gallery server configuration
+     * 
+     * @param configPath
+     *            path to the configuration file
+     */
     public ImageGalleryServerConfig(
             String configPath) {
         super(configPath);

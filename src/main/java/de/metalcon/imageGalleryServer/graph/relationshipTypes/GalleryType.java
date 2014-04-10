@@ -1,6 +1,14 @@
 package de.metalcon.imageGalleryServer.graph.relationshipTypes;
 
-public enum GalleryType {
+import org.neo4j.graphdb.RelationshipType;
+
+/**
+ * categories an entity child can be sorted in
+ * 
+ * @author sebschlicht
+ * 
+ */
+public enum GalleryType implements RelationshipType {
 
     /**
      * image was created in news feed

@@ -2,6 +2,12 @@ package de.metalcon.imageGalleryServer.graph;
 
 import org.neo4j.graphdb.Label;
 
+/**
+ * types a node in the gallery can be of
+ * 
+ * @author sebschlicht
+ * 
+ */
 public enum GNodeType implements Label {
 
     /**
