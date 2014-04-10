@@ -1,7 +1,7 @@
 package de.metalcon.imageGalleryServer;
 
 /**
- * image information object to create images and use images read
+ * image information object to create images and use images read before
  * 
  * @author sebschlicht
  * 
@@ -41,6 +41,19 @@ public class ImageInfo {
      */
     protected String metaData;
 
+    public ImageInfo(
+            long timestamp,
+            long identifier,
+            String urlSource,
+            String urlLink,
+            String title) {
+        this.timestamp = timestamp;
+        this.identifier = identifier;
+        this.urlSource = urlSource;
+        this.urlLink = urlLink;
+        this.title = title;
+    }
+
     /**
      * @return timestamp of image upload
      */
@@ -53,6 +66,29 @@ public class ImageInfo {
      */
     public long getIdentifier() {
         return identifier;
+    }
+
+    /**
+     * @return URL to plain image
+     */
+    public String getUrlSource() {
+        return urlSource;
+    }
+
+    /**
+     * @return URL image refers to<br>
+     *         (optional, may be <b>null</b>)
+     */
+    public String getUrlLink() {
+        return urlLink;
+    }
+
+    /**
+     * @return image title<br>
+     *         (optional, may be <b>null</b>)
+     */
+    public String getTitle() {
+        return title;
     }
 
     /**

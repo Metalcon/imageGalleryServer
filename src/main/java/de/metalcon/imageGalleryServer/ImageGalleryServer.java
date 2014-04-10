@@ -20,6 +20,7 @@ import de.metalcon.imageGalleryServer.exception.ExceptionFactory;
 import de.metalcon.imageGalleryServer.graph.GEntity;
 import de.metalcon.imageGalleryServer.graph.GImage;
 import de.metalcon.imageGalleryServer.graph.GNodeType;
+import de.metalcon.imageGalleryServer.graph.traversal.ImageTraversalAll;
 import de.metalcon.imageStorageServer.ImageStorageServer;
 import de.metalcon.imageStorageServer.protocol.create.CreateResponse;
 
@@ -51,19 +52,21 @@ public class ImageGalleryServer implements ImageGallery {
             schema.awaitIndexesOnline(10, TimeUnit.SECONDS);
             System.out.println("indices online");
 
+            ImageTraversalAll.init(graph);
+            System.out.println("filtering engines loaded");
+
             tx.success();
             tx.close();
         }
         System.out.println("database online");
     }
 
-    protected void storeImage(
-            long imageId,
-            ImageInfo image,
-            InputStream imageStream) {
+    /////////////// HELPER METHODS /////////////////////
+
+    protected void storeImage(ImageInfo image, InputStream imageStream) {
         CreateResponse response = new CreateResponse();
-        if (!storageServer.createImage(String.valueOf(imageId), imageStream,
-                image.getMetaData(), true, response)) {
+        if (!storageServer.createImage(String.valueOf(image.getIdentifier()),
+                imageStream, image.getMetaData(), true, response)) {
             System.err.println("failed to store image: " + response);
             throw new IllegalStateException("failed to store image");
         }
@@ -79,17 +82,6 @@ public class ImageGalleryServer implements ImageGallery {
         return null;
     }
 
-    protected GEntity loadEntity(long entityId) {
-        // try to load entity from node
-        Node entityNode = loadEntityNode(entityId);
-        if (entityNode != null) {
-            return GEntity.loadFromNode(entityNode);
-        }
-
-        // create entity
-        return new GEntity(graph, entityId);
-    }
-
     protected Node loadImageNode(long imageId) {
         ResourceIterable<Node> nodes =
                 graph.findNodesByLabelAndProperty(GNodeType.IMAGE,
@@ -100,24 +92,56 @@ public class ImageGalleryServer implements ImageGallery {
         return null;
     }
 
+    protected GEntity loadEntity(long entityId, boolean createIfNotExisting) {
+        // try to load entity from node
+        Node entityNode = loadEntityNode(entityId);
+        if (entityNode != null) {
+            return GEntity.loadFromNode(entityNode);
+        }
+
+        // create entity lazy if wished
+        if (createIfNotExisting) {
+            return new GEntity(graph, entityId);
+        }
+
+        return null;
+    }
+
+    ///////////////////// COMMAND HANDLERS ///////////////////////
+
     public void createImage(CreateImageParameterContainer parameters) {
         long imageId = parameters.getImageInfo().getIdentifier();
 
         if (loadImageNode(imageId) != null) {
             throw ExceptionFactory.usageImageIdentifierInUse(imageId);
         }
-        storeImage(imageId, parameters.getImageInfo(),
-                parameters.getImageStream());
+        storeImage(parameters.getImageInfo(), parameters.getImageStream());
 
         // load entity
-        GEntity entity = loadEntity(parameters.getEntityId());
+        GEntity entity = loadEntity(parameters.getEntityId(), true);
 
         // create image
-        GImage image = new GImage(graph, imageId, parameters.getImageInfo());
+        GImage image = new GImage(graph, parameters.getImageInfo());
 
         // add image
         entity.addImage(image, false);
     }
+
+    public GalleryInfo readImagesOfEntity(
+            long entityId,
+            int start,
+            int numImages) {
+        try (Transaction tx = graph.beginTx()) {
+            GEntity entity = loadEntity(entityId, false);
+            if (entity != null) {
+                return entity.readAllImages(start, numImages);
+            }
+
+            return new GalleryInfo();
+        }
+    }
+
+    /////////// INTERFACE METHODS //////////////
 
     public boolean createImage(
             long entityId,
@@ -144,7 +168,18 @@ public class ImageGalleryServer implements ImageGallery {
 
         InputStream imageStream =
                 new FileInputStream("src/main/resources/test.png");
-        gallery.createImage(1, new ImageInfo(), imageStream);
+        ImageInfo imageInfo =
+                new ImageInfo(System.currentTimeMillis(), 5,
+                        "http://google.de/", null, null);
+
+        gallery.createImage(1, imageInfo, imageStream);
+
+        GalleryInfo result = gallery.readImagesOfEntity(1, 0, 100);
+        System.out.println("num images: " + result.size);
+        for (ImageInfo ii : result.imagesLoaded) {
+            System.out.println(ii.identifier + ": " + ii.getUrlSource() + " ["
+                    + ii.getTimestamp() + "]");
+        }
         System.out.println("image created");
     }
 

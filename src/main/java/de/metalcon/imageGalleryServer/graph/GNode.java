@@ -56,4 +56,11 @@ public class GNode {
         return node;
     }
 
+    /**
+     * @return node identifier
+     */
+    public long getIdentifier() {
+        return (long) node.getProperty(PROP_IDENTIFIER);
+    }
+
 }
