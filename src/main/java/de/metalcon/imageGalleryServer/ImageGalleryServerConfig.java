@@ -1,6 +1,7 @@
 package de.metalcon.imageGalleryServer;
 
 import de.metalcon.imageStorageServer.ImageStorageServerConfig;
+import de.metalcon.zmqworker.ZmqConfig;
 
 /**
  * image gallery server configuration object
@@ -8,7 +9,8 @@ import de.metalcon.imageStorageServer.ImageStorageServerConfig;
  * @author sebschlicht
  * 
  */
-public class ImageGalleryServerConfig extends ImageStorageServerConfig {
+public class ImageGalleryServerConfig extends ImageStorageServerConfig
+        implements ZmqConfig {
 
     private static final long serialVersionUID = -7405977360066179480L;
 
@@ -16,6 +18,16 @@ public class ImageGalleryServerConfig extends ImageStorageServerConfig {
      * path to gallery database
      */
     public String galleryDatabase_path;
+
+    /**
+     * ZMQ endpoint the worker listens on
+     */
+    public String endpoint;
+
+    /**
+     * number of ZMQ threads
+     */
+    public int num_zmq_threads;
 
     /**
      * load image gallery server configuration
@@ -33,6 +45,16 @@ public class ImageGalleryServerConfig extends ImageStorageServerConfig {
      */
     public String getGalleryDatabasePath() {
         return galleryDatabase_path;
+    }
+
+    @Override
+    public String getEndpoint() {
+        return endpoint;
+    }
+
+    @Override
+    public int getNumIOThreads() {
+        return num_zmq_threads;
     }
 
 }

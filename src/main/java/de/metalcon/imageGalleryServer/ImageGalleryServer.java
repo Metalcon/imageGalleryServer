@@ -14,8 +14,10 @@ import org.neo4j.graphdb.Transaction;
 import org.neo4j.graphdb.factory.GraphDatabaseFactory;
 import org.neo4j.graphdb.schema.Schema;
 
+import de.metalcon.domain.Muid;
 import de.metalcon.imageGalleryServer.api.GalleryInfo;
 import de.metalcon.imageGalleryServer.api.ImageInfo;
+import de.metalcon.imageGalleryServer.api.requests.GalleryServerRequest;
 import de.metalcon.imageGalleryServer.commands.GalleryCommand;
 import de.metalcon.imageGalleryServer.commands.parameters.CreateImageParameterContainer;
 import de.metalcon.imageGalleryServer.exception.ExceptionFactory;
@@ -23,10 +25,13 @@ import de.metalcon.imageGalleryServer.graph.GEntity;
 import de.metalcon.imageGalleryServer.graph.GImage;
 import de.metalcon.imageGalleryServer.graph.GNodeType;
 import de.metalcon.imageGalleryServer.graph.traversal.ImageTraversalAll;
+import de.metalcon.imageGalleryServer.zmq.ImageGalleryRequestHandler;
 import de.metalcon.imageStorageServer.ImageStorageServer;
 import de.metalcon.imageStorageServer.protocol.create.CreateResponse;
+import de.metalcon.zmqworker.Server;
 
-public class ImageGalleryServer implements ImageGallery {
+public class ImageGalleryServer extends Server<GalleryServerRequest> implements
+        ImageGallery {
 
     protected ImageStorageServer storageServer;
 
@@ -36,6 +41,8 @@ public class ImageGalleryServer implements ImageGallery {
 
     public ImageGalleryServer(
             ImageGalleryServerConfig config) {
+        super(config);
+
         // load storage server
         storageServer = new ImageStorageServer(config);
 
@@ -164,25 +171,34 @@ public class ImageGalleryServer implements ImageGallery {
     }
 
     public static void main(String[] args) throws FileNotFoundException {
-        String configPath = "src/main/resources/test.config";
-        ImageGalleryServer gallery =
-                new ImageGalleryServer(new ImageGalleryServerConfig(configPath));
-
+        //        String configPath = "src/main/resources/test.config";
+        //        ImageGalleryServer gallery =
+        //                new ImageGalleryServer(new ImageGalleryServerConfig(configPath));
+        //
         InputStream imageStream =
                 new FileInputStream("src/main/resources/test.png");
-        ImageInfo imageInfo =
-                new ImageInfo(System.currentTimeMillis(), 6,
-                        "http://google.de/", null, null);
+        //        ImageInfo imageInfo =
+        //                new ImageInfo(System.currentTimeMillis(), 6,
+        //                        "http://google.de/", null, null);
+        //
+        //        gallery.createImage(1, imageInfo, imageStream);
+        //
+        //        GalleryInfo result = gallery.readImagesOfEntity(1, 0, 100);
+        //        System.out.println("num images: " + result.getSize());
+        //        for (ImageInfo ii : result.getImagesLoaded()) {
+        //            System.out.println(ii.getIdentifier() + ": " + ii.getUrlSource()
+        //                    + " [" + ii.getTimestamp() + "]");
+        //        }
+        //        System.out.println("image created");
 
-        gallery.createImage(1, imageInfo, imageStream);
+        ImageGalleryServer galleryServer =
+                new ImageGalleryServer(new ImageGalleryServerConfig(
+                        "src/main/resources/test.config"));
+        galleryServer.createImage(
+                Muid.createFromID(91568296689664L).getValue(), new ImageInfo(
+                        System.currentTimeMillis(), 7, "http://google.de/",
+                        null, null), imageStream);
 
-        GalleryInfo result = gallery.readImagesOfEntity(1, 0, 100);
-        System.out.println("num images: " + result.getSize());
-        for (ImageInfo ii : result.getImagesLoaded()) {
-            System.out.println(ii.getIdentifier() + ": " + ii.getUrlSource()
-                    + " [" + ii.getTimestamp() + "]");
-        }
-        System.out.println("image created");
+        galleryServer.start(new ImageGalleryRequestHandler(galleryServer));
     }
-
 }
