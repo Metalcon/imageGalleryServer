@@ -11,8 +11,8 @@ import org.neo4j.graphdb.Path;
 import org.neo4j.graphdb.Relationship;
 import org.neo4j.graphdb.traversal.TraversalDescription;
 
-import de.metalcon.imageGalleryServer.GalleryInfo;
-import de.metalcon.imageGalleryServer.ImageInfo;
+import de.metalcon.imageGalleryServer.api.GalleryInfo;
+import de.metalcon.imageGalleryServer.api.ImageInfo;
 import de.metalcon.imageGalleryServer.graph.relationshipTypes.ImageType;
 import de.metalcon.imageGalleryServer.graph.traversal.ImageTraversalAll;
 import de.metalcon.imageGalleryServer.graph.traversal.comparators.ImageComparator;

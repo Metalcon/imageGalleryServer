@@ -21,6 +21,7 @@
 
   <properties>
     <metalcon.imageStorageServer.version>0.1.0</metalcon.imageStorageServer.version>
+    <metalcon.imageGalleryServer.api.version>0.0.1</metalcon.imageGalleryServer.api.version>
 
     <neo4j.version>2.0.1</neo4j.version>
   </properties>
@@ -30,6 +31,11 @@
       <groupId>de.metalcon</groupId>
       <artifactId>image-storage-server</artifactId>
       <version>${metalcon.imageStorageServer.version}</version>
+    </dependency>
+    <dependency>
+    <groupId>de.metalcon</groupId>
+    <artifactId>image-gallery-server-api</artifactId>
+    <version>${metalcon.imageGalleryServer.api.version}</version>
     </dependency>
 
     <dependency>

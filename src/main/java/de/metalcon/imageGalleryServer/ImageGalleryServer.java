@@ -14,6 +14,8 @@ import org.neo4j.graphdb.Transaction;
 import org.neo4j.graphdb.factory.GraphDatabaseFactory;
 import org.neo4j.graphdb.schema.Schema;
 
+import de.metalcon.imageGalleryServer.api.GalleryInfo;
+import de.metalcon.imageGalleryServer.api.ImageInfo;
 import de.metalcon.imageGalleryServer.commands.GalleryCommand;
 import de.metalcon.imageGalleryServer.commands.parameters.CreateImageParameterContainer;
 import de.metalcon.imageGalleryServer.exception.ExceptionFactory;
@@ -169,16 +171,16 @@ public class ImageGalleryServer implements ImageGallery {
         InputStream imageStream =
                 new FileInputStream("src/main/resources/test.png");
         ImageInfo imageInfo =
-                new ImageInfo(System.currentTimeMillis(), 5,
+                new ImageInfo(System.currentTimeMillis(), 6,
                         "http://google.de/", null, null);
 
         gallery.createImage(1, imageInfo, imageStream);
 
         GalleryInfo result = gallery.readImagesOfEntity(1, 0, 100);
-        System.out.println("num images: " + result.size);
-        for (ImageInfo ii : result.imagesLoaded) {
-            System.out.println(ii.identifier + ": " + ii.getUrlSource() + " ["
-                    + ii.getTimestamp() + "]");
+        System.out.println("num images: " + result.getSize());
+        for (ImageInfo ii : result.getImagesLoaded()) {
+            System.out.println(ii.getIdentifier() + ": " + ii.getUrlSource()
+                    + " [" + ii.getTimestamp() + "]");
         }
         System.out.println("image created");
     }

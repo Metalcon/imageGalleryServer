@@ -2,7 +2,7 @@ package de.metalcon.imageGalleryServer.commands.parameters;
 
 import java.io.InputStream;
 
-import de.metalcon.imageGalleryServer.ImageInfo;
+import de.metalcon.imageGalleryServer.api.ImageInfo;
 
 /**
  * parameters for simple image creation

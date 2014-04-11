@@ -3,7 +3,7 @@ package de.metalcon.imageGalleryServer.graph;
 import org.neo4j.graphdb.GraphDatabaseService;
 import org.neo4j.graphdb.Node;
 
-import de.metalcon.imageGalleryServer.ImageInfo;
+import de.metalcon.imageGalleryServer.api.ImageInfo;
 
 /**
  * gallery image owned by an entity<br>
