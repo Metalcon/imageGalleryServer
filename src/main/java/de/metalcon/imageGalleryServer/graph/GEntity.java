@@ -11,7 +11,6 @@ import org.neo4j.graphdb.Path;
 import org.neo4j.graphdb.Relationship;
 import org.neo4j.graphdb.traversal.TraversalDescription;
 
-import de.metalcon.imageGalleryServer.LoadedImage;
 import de.metalcon.imageGalleryServer.api.GalleryInfo;
 import de.metalcon.imageGalleryServer.api.ImageInfo;
 import de.metalcon.imageGalleryServer.graph.relationshipTypes.ImageType;
@@ -95,8 +94,9 @@ public class GEntity extends GNode {
             }
 
             image = GImage.loadFromNode(item.getEndNode());
-            imagesLoaded.add(new LoadedImage(image.getTimestamp(), image
-                    .getIdentifier(), image.getUrlLink(), image.getTitle()));
+            imagesLoaded.add(new ImageInfo(image.getTimestamp(), image
+                    .getIdentifier(), image.getUrlLink(), image.getTitle(),
+                    null));
 
             if (crrItem == lastItem) {
                 break;

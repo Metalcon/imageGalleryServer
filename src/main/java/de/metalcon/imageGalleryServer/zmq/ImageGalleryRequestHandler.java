@@ -24,6 +24,7 @@ public class ImageGalleryRequestHandler implements
     @Override
     public Response handleRequest(GalleryServerRequest request)
             throws Exception {
+        System.out.println("request " + request.getClass());
         if (request instanceof RequestAllImages) {
             RequestAllImages readRequest = (RequestAllImages) request;
             return new GalleryResponse(galleryServer.readImagesOfEntity(
