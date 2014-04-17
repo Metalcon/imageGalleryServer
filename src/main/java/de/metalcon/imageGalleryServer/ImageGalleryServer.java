@@ -193,7 +193,7 @@ public class ImageGalleryServer extends Server<GalleryServerRequest> implements
 
         ImageGalleryServer galleryServer =
                 new ImageGalleryServer(new ImageGalleryServerConfig(
-                        "src/main/resources/test.config"));
+                        "src/test/resources/config.txt"));
         galleryServer.createImage(
                 Muid.createFromID(91568296689664L).getValue(), new ImageInfo(
                         System.currentTimeMillis(), 7, "http://google.de/",

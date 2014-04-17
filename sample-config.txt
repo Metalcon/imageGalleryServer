@@ -1,9 +1,9 @@
 # gallery database
-galleryDatabase_path = /tmp/gallery/
+galleryDatabase_path = /usr/share/metalcon/imageGalleryServer/galleryDb
 
 # image storage server directories
-image_directory = /etc/imageStorageServer/
-temporary_directory = /tmp/imageStorageServer/
+image_directory = /usr/share/metalcon/imageStorageServer
+temporary_directory = /tmp/imageStorageServer
 
 # config to access the mongoDB database
 metaDatabase_host = localhost
@@ -12,4 +12,3 @@ metaDatabase_name = imagedb
 
 # ZMQ settings
 endpoint = tcp://127.0.0.1:12669
-num_zmq_threads = 1
