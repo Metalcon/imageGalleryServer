@@ -32,11 +32,12 @@ public class GImage extends GNode {
      */
     public GImage(
             GraphDatabaseService graph,
+            String url,
             ImageInfo imageInfo) {
         super(graph, GNodeType.IMAGE, imageInfo.getIdentifier());
 
         node.setProperty(PROP_TIMESTAMP, imageInfo.getTimestamp());
-        node.setProperty(PROP_URL_SOURCE, imageInfo.getUrlSource());
+        node.setProperty(PROP_URL_SOURCE, url);
         if (imageInfo.getUrlLink() != null) {
             node.setProperty(PROP_URL_LINK, imageInfo.getUrlLink());
         }

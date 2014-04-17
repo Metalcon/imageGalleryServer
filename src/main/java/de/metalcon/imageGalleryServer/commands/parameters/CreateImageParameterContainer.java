@@ -13,11 +13,6 @@ import de.metalcon.imageGalleryServer.api.ImageInfo;
 public class CreateImageParameterContainer {
 
     /**
-     * identifier of the uploading entity
-     */
-    protected long entityId;
-
-    /**
      * image information
      */
     protected ImageInfo imageInfo;
@@ -30,18 +25,14 @@ public class CreateImageParameterContainer {
     /**
      * create parameter container for simple image creation
      * 
-     * @param entityId
-     *            identifier of the uploading entity
      * @param imageInfo
      *            image information
      * @param imageStream
      *            raw image data
      */
     public CreateImageParameterContainer(
-            long entityId,
             ImageInfo imageInfo,
             InputStream imageStream) {
-        this.entityId = entityId;
         this.imageInfo = imageInfo;
         this.imageStream = imageStream;
     }
@@ -50,7 +41,7 @@ public class CreateImageParameterContainer {
      * @return identifier of the uploading entity
      */
     public long getEntityId() {
-        return entityId;
+        return imageInfo.getIdentifier();
     }
 
     /**

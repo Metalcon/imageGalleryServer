@@ -3,12 +3,12 @@
   <parent>
     <groupId>de.metalcon</groupId>
     <artifactId>pom</artifactId>
-    <version>0.0.10</version>
+    <version>0.0.15</version>
   </parent>
 
   <modelVersion>4.0.0</modelVersion>
   <artifactId>image-gallery-server</artifactId>
-  <version>0.0.1</version>
+  <version>0.1.0</version>
   <name>ImageGalleryServer</name>
 
   <!-- Metalcon repository to resolve dependencies from -->
@@ -36,7 +36,6 @@
     <java.exec.launcherClass>de.metalcon.imageGalleryServer.ImageGalleryServer</java.exec.launcherClass>
 
     <metalcon.imageStorageServer.version>0.1.0</metalcon.imageStorageServer.version>
-    <metalcon.imageGalleryServer.api.version>0.0.1</metalcon.imageGalleryServer.api.version>
 
     <neo4j.version>2.0.1</neo4j.version>
   </properties>
@@ -50,7 +49,7 @@
     <dependency>
       <groupId>de.metalcon</groupId>
       <artifactId>image-gallery-server-api</artifactId>
-      <version>0.0.2</version>
+      <version>${metalcon.imageGalleryServer.api.version}</version>
     </dependency>
     <dependency>
       <groupId>de.metalcon</groupId>

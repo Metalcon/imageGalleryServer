@@ -37,7 +37,6 @@ public class ImageGalleryRequestHandler implements
                     case ALL:
                         successFlag =
                                 galleryServer.createImage(
-                                        createRequest.getEntityId(),
                                         createRequest.getImageInfo(),
                                         createRequest.getImageStream());
                         break;

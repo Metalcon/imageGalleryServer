@@ -145,7 +145,9 @@ public class ImageGalleryServer extends Server<GalleryServerRequest> implements
         GEntity entity = loadEntity(parameters.getEntityId(), true);
 
         // create image
-        GImage image = new GImage(graph, parameters.getImageInfo());
+        GImage image =
+                new GImage(graph, "" + parameters.getEntityId(),
+                        parameters.getImageInfo());
 
         // add image
         entity.addImage(image, false);
@@ -167,10 +169,7 @@ public class ImageGalleryServer extends Server<GalleryServerRequest> implements
 
     /////////// INTERFACE METHODS //////////////
 
-    public boolean createImage(
-            long entityId,
-            ImageInfo imageInfo,
-            InputStream imageStream) {
+    public boolean createImage(ImageInfo imageInfo, InputStream imageStream) {
         // TODO stack command
         //        CreateImageParameterContainer parameters =
         //                new CreateImageParameterContainer(entityId, imageInfo,
@@ -178,7 +177,7 @@ public class ImageGalleryServer extends Server<GalleryServerRequest> implements
         //        return pendingCommands.offer(new CreateImageCommand(this, parameters));
 
         try (Transaction tx = graph.beginTx()) {
-            createImage(new CreateImageParameterContainer(entityId, imageInfo,
+            createImage(new CreateImageParameterContainer(imageInfo,
                     imageStream));
             tx.success();
             return true;
