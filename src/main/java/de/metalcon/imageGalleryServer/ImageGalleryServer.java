@@ -1,11 +1,12 @@
 package de.metalcon.imageGalleryServer;
 
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
+
+import net.hh.request_dispatcher.server.RequestHandler;
 
 import org.neo4j.graphdb.GraphDatabaseService;
 import org.neo4j.graphdb.Node;
@@ -14,7 +15,7 @@ import org.neo4j.graphdb.Transaction;
 import org.neo4j.graphdb.factory.GraphDatabaseFactory;
 import org.neo4j.graphdb.schema.Schema;
 
-import de.metalcon.domain.Muid;
+import de.metalcon.api.responses.Response;
 import de.metalcon.imageGalleryServer.api.GalleryInfo;
 import de.metalcon.imageGalleryServer.api.ImageInfo;
 import de.metalcon.imageGalleryServer.api.requests.GalleryServerRequest;
@@ -32,6 +33,12 @@ import de.metalcon.zmqworker.Server;
 
 public class ImageGalleryServer extends Server<GalleryServerRequest> implements
         ImageGallery {
+
+    /**
+     * default value for configuration file path
+     */
+    protected static final String DEFAULT_CONFIG_PATH =
+            "/usr/share/metalcon/imageGalleryServer/config.txt";
 
     protected ImageStorageServer storageServer;
 
@@ -68,6 +75,13 @@ public class ImageGalleryServer extends Server<GalleryServerRequest> implements
             tx.close();
         }
         System.out.println("database online");
+
+        // initialize request handler
+        RequestHandler<GalleryServerRequest, Response> requestHandler =
+                new ImageGalleryRequestHandler(this);
+
+        // start ZMQ communication
+        start(requestHandler);
     }
 
     /////////////// HELPER METHODS /////////////////////
@@ -171,34 +185,25 @@ public class ImageGalleryServer extends Server<GalleryServerRequest> implements
     }
 
     public static void main(String[] args) throws FileNotFoundException {
-        //        String configPath = "src/main/resources/test.config";
-        //        ImageGalleryServer gallery =
-        //                new ImageGalleryServer(new ImageGalleryServerConfig(configPath));
-        //
-        InputStream imageStream =
-                new FileInputStream("src/main/resources/test.png");
-        //        ImageInfo imageInfo =
-        //                new ImageInfo(System.currentTimeMillis(), 6,
-        //                        "http://google.de/", null, null);
-        //
-        //        gallery.createImage(1, imageInfo, imageStream);
-        //
-        //        GalleryInfo result = gallery.readImagesOfEntity(1, 0, 100);
-        //        System.out.println("num images: " + result.getSize());
-        //        for (ImageInfo ii : result.getImagesLoaded()) {
-        //            System.out.println(ii.getIdentifier() + ": " + ii.getUrlSource()
-        //                    + " [" + ii.getTimestamp() + "]");
-        //        }
-        //        System.out.println("image created");
+        // get configuration path
+        String configPath;
+        if (args.length > 0) {
+            configPath = args[0];
+        } else {
+            configPath = DEFAULT_CONFIG_PATH;
+            System.out
+                    .println("[INFO] using default configuration file path \""
+                            + DEFAULT_CONFIG_PATH + "\"");
+        }
 
-        ImageGalleryServer galleryServer =
-                new ImageGalleryServer(new ImageGalleryServerConfig(
-                        "src/test/resources/config.txt"));
-        galleryServer.createImage(
-                Muid.createFromID(91568296689664L).getValue(), new ImageInfo(
-                        System.currentTimeMillis(), 7, "http://google.de/",
-                        null, null), imageStream);
+        // load server configuration
+        ImageGalleryServerConfig config =
+                new ImageGalleryServerConfig(configPath);
+        if (!config.isLoaded()) {
+            System.err.println("failed to load configuration");
+            return;
+        }
 
-        galleryServer.start(new ImageGalleryRequestHandler(galleryServer));
+        new ImageGalleryServer(config);
     }
 }

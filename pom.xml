@@ -50,7 +50,7 @@
     <dependency>
       <groupId>de.metalcon</groupId>
       <artifactId>image-gallery-server-api</artifactId>
-      <version>${metalcon.imageGalleryServer.api.version}</version>
+      <version>0.0.2</version>
     </dependency>
     <dependency>
       <groupId>de.metalcon</groupId>
