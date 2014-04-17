@@ -169,7 +169,10 @@ public class ImageGalleryServer extends Server<GalleryServerRequest> implements
 
     /////////// INTERFACE METHODS //////////////
 
-    public boolean createImage(ImageInfo imageInfo, InputStream imageStream) {
+    public boolean createImage(
+            long entityId,
+            ImageInfo imageInfo,
+            InputStream imageStream) {
         // TODO stack command
         //        CreateImageParameterContainer parameters =
         //                new CreateImageParameterContainer(entityId, imageInfo,
@@ -177,7 +180,7 @@ public class ImageGalleryServer extends Server<GalleryServerRequest> implements
         //        return pendingCommands.offer(new CreateImageCommand(this, parameters));
 
         try (Transaction tx = graph.beginTx()) {
-            createImage(new CreateImageParameterContainer(imageInfo,
+            createImage(new CreateImageParameterContainer(entityId, imageInfo,
                     imageStream));
             tx.success();
             return true;
