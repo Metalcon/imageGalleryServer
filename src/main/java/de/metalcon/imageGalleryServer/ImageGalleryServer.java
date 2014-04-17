@@ -81,6 +81,7 @@ public class ImageGalleryServer extends Server<GalleryServerRequest> implements
                 new ImageGalleryRequestHandler(this);
 
         // start ZMQ communication
+        System.out.println("listening @ " + config.getEndpoint());
         start(requestHandler);
     }
 
