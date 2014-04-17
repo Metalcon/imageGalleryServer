@@ -6,7 +6,7 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 
-import net.hh.request_dispatcher.server.RequestHandler;
+import net.hh.request_dispatcher.RequestHandler;
 
 import org.neo4j.graphdb.GraphDatabaseService;
 import org.neo4j.graphdb.Node;
@@ -21,7 +21,7 @@ import de.metalcon.imageGalleryServer.api.ImageInfo;
 import de.metalcon.imageGalleryServer.api.requests.GalleryServerRequest;
 import de.metalcon.imageGalleryServer.commands.GalleryCommand;
 import de.metalcon.imageGalleryServer.commands.parameters.CreateImageParameterContainer;
-import de.metalcon.imageGalleryServer.exception.ExceptionFactory;
+import de.metalcon.imageGalleryServer.exceptions.ExceptionFactory;
 import de.metalcon.imageGalleryServer.graph.GEntity;
 import de.metalcon.imageGalleryServer.graph.GImage;
 import de.metalcon.imageGalleryServer.graph.GNodeType;

@@ -1,6 +1,6 @@
 package de.metalcon.imageGalleryServer.zmq;
 
-import net.hh.request_dispatcher.server.RequestHandler;
+import net.hh.request_dispatcher.RequestHandler;
 import de.metalcon.api.responses.Response;
 import de.metalcon.api.responses.SuccessResponse;
 import de.metalcon.imageGalleryServer.ImageGalleryServer;

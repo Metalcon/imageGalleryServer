@@ -19,5 +19,5 @@ bin/
 # backup files
 *~
 
-# config files
+# config file
 config.txt

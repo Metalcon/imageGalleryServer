@@ -1,4 +1,4 @@
-package de.metalcon.imageGalleryServer.exception;
+package de.metalcon.imageGalleryServer.exceptions;
 
 /**
  * exception factory to create exceptions with useful error messages

@@ -25,11 +25,6 @@ public class ImageGalleryServerConfig extends ImageStorageServerConfig
     public String endpoint;
 
     /**
-     * number of ZMQ threads
-     */
-    public int num_zmq_threads;
-
-    /**
      * load image gallery server configuration
      * 
      * @param configPath
@@ -50,11 +45,6 @@ public class ImageGalleryServerConfig extends ImageStorageServerConfig
     @Override
     public String getEndpoint() {
         return endpoint;
-    }
-
-    @Override
-    public int getNumIOThreads() {
-        return num_zmq_threads;
     }
 
 }
