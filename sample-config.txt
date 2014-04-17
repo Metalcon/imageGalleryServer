@@ -1,0 +1,14 @@
+# gallery database
+galleryDatabase_path = /usr/share/metalcon/imageGalleryServer/galleryDb
+
+# image storage server directories
+image_directory = /usr/share/metalcon/imageStorageServer
+temporary_directory = /tmp/imageStorageServer
+
+# config to access the mongoDB database
+metaDatabase_host = localhost
+metaDatabase_port = 27017
+metaDatabase_name = imagedb
+
+# ZMQ settings
+endpoint = tcp://127.0.0.1:12669
