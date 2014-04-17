@@ -35,8 +35,6 @@
   <properties>
     <java.exec.launcherClass>de.metalcon.imageGalleryServer.ImageGalleryServer</java.exec.launcherClass>
 
-    <metalcon.imageStorageServer.version>0.1.0</metalcon.imageStorageServer.version>
-
     <neo4j.version>2.0.1</neo4j.version>
   </properties>
 
