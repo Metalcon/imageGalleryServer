@@ -79,6 +79,8 @@ public class ImageGalleryServer extends Server<GalleryServerRequest> implements
         RequestHandler<GalleryServerRequest, Response> requestHandler =
                 new ImageGalleryRequestHandler(this);
 
+        System.setProperty("jmagick.systemclassloader", "false");
+
         // start ZMQ communication
         start(requestHandler);
     }

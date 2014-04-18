@@ -27,8 +27,17 @@ then
 	sudo mkdir -p $SERVER_DIR
 fi
 
+echo "storage directory is \"$STORAGE_DIR\""
+if [ ! -e "$STORAGE_DIR" ]
+then
+	# create storage directory
+	echo "directory not present, creating..."
+	sudo mkdir -p $STORAGE_DIR
+fi
+
 # set directory rights
 sudo chown -R $SERVER_DIR_RIGHTS $SERVER_DIR
+sudo chown -R $SERVER_DIR_RIGHTS $STORAGE_DIR
 echo "set directory rights to \"$SERVER_DIR_RIGHTS\""
 
 # reset server files
