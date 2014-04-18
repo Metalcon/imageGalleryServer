@@ -51,6 +51,7 @@ public class ImageGalleryServer extends Server<GalleryServerRequest> implements
         super(config);
 
         // load storage server
+        System.setProperty("jmagick.systemclassloader", "false");
         storageServer = new ImageStorageServer(config);
 
         // load database
@@ -78,8 +79,6 @@ public class ImageGalleryServer extends Server<GalleryServerRequest> implements
         // initialize request handler
         RequestHandler<GalleryServerRequest, Response> requestHandler =
                 new ImageGalleryRequestHandler(this);
-
-        System.setProperty("jmagick.systemclassloader", "false");
 
         // start ZMQ communication
         start(requestHandler);
