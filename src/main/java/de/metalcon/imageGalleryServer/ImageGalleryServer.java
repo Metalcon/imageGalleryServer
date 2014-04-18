@@ -66,22 +66,20 @@ public class ImageGalleryServer extends Server<GalleryServerRequest> implements
             schema.indexFor(GNodeType.ENTITY).on(GEntity.PROP_IDENTIFIER);
 
             schema.awaitIndexesOnline(10, TimeUnit.SECONDS);
-            System.out.println("indices online");
+            LOG.debug("graph indices online");
 
             ImageTraversalAll.init(graph);
-            System.out.println("filtering engines loaded");
 
             tx.success();
             tx.close();
         }
-        System.out.println("database online");
+        LOG.debug("database online");
 
         // initialize request handler
         RequestHandler<GalleryServerRequest, Response> requestHandler =
                 new ImageGalleryRequestHandler(this);
 
         // start ZMQ communication
-        System.out.println("listening @ " + config.getEndpoint());
         start(requestHandler);
     }
 
@@ -91,7 +89,7 @@ public class ImageGalleryServer extends Server<GalleryServerRequest> implements
         CreateResponse response = new CreateResponse();
         if (!storageServer.createImage(String.valueOf(image.getIdentifier()),
                 imageStream, image.getMetaData(), true, response)) {
-            System.err.println("failed to store image: " + response);
+            LOG.error("failed to store image: " + response);
             throw new IllegalStateException("failed to store image");
         }
     }
@@ -194,16 +192,15 @@ public class ImageGalleryServer extends Server<GalleryServerRequest> implements
             configPath = args[0];
         } else {
             configPath = DEFAULT_CONFIG_PATH;
-            System.out
-                    .println("[INFO] using default configuration file path \""
-                            + DEFAULT_CONFIG_PATH + "\"");
+            LOG.info("using default configuration file path \""
+                    + DEFAULT_CONFIG_PATH + "\"");
         }
 
         // load server configuration
         ImageGalleryServerConfig config =
                 new ImageGalleryServerConfig(configPath);
         if (!config.isLoaded()) {
-            System.err.println("failed to load configuration");
+            LOG.error("failed to load configuration");
             return;
         }
 
